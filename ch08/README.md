@@ -35,4 +35,54 @@ Intel CPU에서는 `하이퍼 쓰레딩`이라고 함
 
 
 ## 03장 - 메모리
+- 파일 캐시
+- IPC
+- 프로세스 메모리
 
+### vmstat
+```shell
+$ vmstat 3 5
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 1  0      0 6370980   2116 921236    0    0     3     4   57   40  0  0 99  0  0
+ 0  0      0 6371756   2116 921236    0    0     0     0  359  226  0  0 99  0  0
+ 0  0      0 6370520   2116 921236    0    0     0     0  450  251  0  1 99  0  0
+ 0  0      0 6370708   2116 921236    0    0     0     0  351  235  0  1 99  0  0
+ 0  0      0 6369760   2116 921236    0    0     0     5  437  266  0  1 99  0  0
+```
+
+### 파일 캐시 메모리
+```shell
+$ free -m
+              total        used        free      shared  buff/cache   available
+Mem:           7820         696        6222          16         901        6810
+Swap:          2047           0        2047
+```
+
+### IPC 메모리
+```shell
+$ ipcs -a
+
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages
+
+------ Shared Memory Segments --------
+key        shmid      owner      perms      bytes      nattch     status
+
+------ Semaphore Arrays --------
+key        semid      owner      perms      nsems
+```
+
+### 프로세스 메모리
+```shell
+$ ps -auf
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root     23343  0.0  0.0 116740  3312 pts/1    Ss   03:24   0:00 -bash
+root     23429  0.0  0.0  20044  1152 pts/1    S+   03:24   0:00  \_ tmux a -t 0
+root     19032  0.0  0.0 116844  3424 pts/6    Ss   03:18   0:00 -bash
+root     21351  0.0  0.0 157348  2204 pts/6    S+   03:21   0:10  \_ watch -n 5 ping -c 2 www.google.com
+root     14789  0.0  0.0 157344   568 pts/6    S+   15:37   0:00      \_ watch -n 5 ping -c 2 www.google.com
+root     14790  0.0  0.0 132756  1716 pts/6    S+   15:37   0:00          \_ ping -c 2 www.google.com
+```
+
+## 04장 - 디스크
