@@ -304,3 +304,35 @@ $ vgdisplay -v
   PV Status             allocatable
   Total PE / Free PE    32511 / 0
   ```
+
+
+### 스토리지
+- DAS(Directed Attached Storage): 애플리케이션 <- 파일시스템 -> 디스크 스토리지
+- NAS(Network Attached Storage): 애플리케이션 <- 네트워크 --- 파일시스템 -> 디스크 스토리지
+- SAN(Storage Area Network): 애플리케이션 <- 파일시스템 --- 네트워크 -> 디스크 스토리지
+
+`LUN (Logica Unit Number)`: SCSI 버스에서 사용되는 고유 식별자  
+
+
+## 레이드 (RAID)
+- 레이드 0 : 스트라이핑
+- 레이드 1 : 미러링
+- 레이드 0+1 : 스트라이핑과 미러링
+- 레이드 4 : 스트라이핑과 전용 패리티
+- 레이드 5 : 스트라이핑과 분산 패리티
+
+
+## 05장 - 통합 모니터링 도구
+
+### nmon
+```
+# 실시간 모니터링 모드 명령
+nmon -s [second] -b
+s: 갱신간격
+b: 블랙 or 화이트
+
+# 기록 모드 명령
+nmon -f -s [second] -c [count] -m [directory] -[모니터링 항목 상세옵션]
+```
+
+### top
