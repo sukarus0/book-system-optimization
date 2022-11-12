@@ -72,11 +72,17 @@ tcp6       0      0 :::22                   :::*                    LISTEN
 
 ### tcpdump
 ```
-tcpdump -i [device] -s [packetsize] -w [output filename] [network filter]
+tcpdump -i [device] -s [packetsize] -w [output filename] [network filter] -c [count] -C [filesize]
 ```
 
 ```shell
-$ 
+$  tcpdump -i eth1 -s 16000 -w test.dump -c 10
+tcpdump: listening on eth1, link-type EN10MB (Ethernet), capture size 16000 bytes
+10 packets captured
+17 packets received by filter
+0 packets dropped by kernel
 ```
+
+## 08장 - 네트워크 패킷 분석
 
 
