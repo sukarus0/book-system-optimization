@@ -86,3 +86,221 @@ root     14790  0.0  0.0 132756  1716 pts/6    S+   15:37   0:00          \_ pin
 ```
 
 ## 04장 - 디스크
+
+### 디스크 소요시간
+```
+sar -d [second] [count]
+```
+```shell
+$ sar -d 3 2
+Linux 3.10.0-1160.76.1.el7.x86_64 (centos7-generic)     11/12/2022      _x86_64_        (4 CPU)
+
+03:40:17 PM       DEV       tps  rd_sec/s  wr_sec/s  avgrq-sz  avgqu-sz     await     svctm     %util
+03:40:20 PM    dev8-0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+03:40:20 PM  dev253-0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+03:40:20 PM  dev253-1      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+
+03:40:20 PM       DEV       tps  rd_sec/s  wr_sec/s  avgrq-sz  avgqu-sz     await     svctm     %util
+03:40:23 PM    dev8-0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+03:40:23 PM  dev253-0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+03:40:23 PM  dev253-1      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+
+Average:          DEV       tps  rd_sec/s  wr_sec/s  avgrq-sz  avgqu-sz     await     svctm     %util
+Average:       dev8-0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+Average:     dev253-0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+Average:     dev253-1      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+```
+
+### 디스크 입출력 모니터링
+```
+iostat [option] [second] [count]
+```
+```shell
+$ iostat -x 3 2
+Linux 3.10.0-1160.76.1.el7.x86_64 (centos7-generic)     11/12/2022      _x86_64_        (4 CPU)
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0.22    0.00    0.38    0.00    0.00   99.39
+
+Device:         rrqm/s   wrqm/s     r/s     w/s    rkB/s    wkB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+sda               0.00     0.01    0.60    0.15    11.47    14.31    68.95     0.00    1.45    0.39    5.68   0.46   0.03
+dm-0              0.00     0.00    0.57    0.16    11.32    14.36    69.60     0.00    1.54    0.40    5.51   0.47   0.03
+dm-1              0.00     0.00    0.00    0.00     0.03     0.00    50.09     0.00    0.31    0.31    0.00   0.24   0.00
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0.42    0.00    0.67    0.00    0.00   98.92
+
+Device:         rrqm/s   wrqm/s     r/s     w/s    rkB/s    wkB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+sda               0.00     0.00    0.33    0.00     2.66     0.00    16.00     0.00    0.00    0.00    0.00   0.00   0.00
+dm-0              0.00     0.00    0.33    0.00     2.66     0.00    16.00     0.00    0.00    0.00    0.00   0.00   0.00
+dm-1              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.0
+```
+
+### 파일 입출력 발생량과 용도
+- 프로세스별 사용 파일 목록: lsof, /proc/[pid]/fd
+- 프로세스별 입출력 모니터링: strace
+- 프로세스 입출력 위치 확인: pstack, jstack
+
+```shell
+$ lsof | head -10
+COMMAND     PID   TID    USER   FD      TYPE             DEVICE  SIZE/OFF       NODE NAME
+systemd       1          root  cwd       DIR              253,0       224         64 /
+systemd       1          root  rtd       DIR              253,0       224         64 /
+systemd       1          root  txt       REG              253,0   1632960  101033208 /usr/lib/systemd/systemd
+systemd       1          root  mem       REG              253,0     20064       8458 /usr/lib64/libuuid.so.1.3.0
+systemd       1          root  mem       REG              253,0    265576     240203 /usr/lib64/libblkid.so.1.1.0
+systemd       1          root  mem       REG              253,0     90160        593 /usr/lib64/libz.so.1.2.7
+systemd       1          root  mem       REG              253,0    157440        595 /usr/lib64/liblzma.so.5.2.2
+systemd       1          root  mem       REG              253,0     23968       8669 /usr/lib64/libcap-ng.so.0.0.0
+systemd       1          root  mem       REG              253,0     19896       8659 /usr/lib64/libattr.so.1.1.0
+```
+
+### 디스크 관리
+LVM (Logical Volume Manager)  
+파일시스템 - 논리 볼륨 - 볼륨 그룹 - 물리 볼륨  
+  
+- 파일시스템: df
+- 논리볼륨 목록: lvdisplay
+- 볼륨그룹 목록: vgdisplay, vgscan
+- 물리볼륨 목록: pvdisplay
+- 볼류그룹 정보: vgdisplay -v
+
+```shell
+$ lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/centos_centos7/swap
+  LV Name                swap
+  VG Name                centos_centos7
+  LV UUID                cTjDR4-a0Yc-1qz4-ZhVF-mDq3-ICnj-kSEldM
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2022-08-25 18:58:51 +0000
+  LV Status              available
+  # open                 2
+  LV Size                2.00 GiB
+  Current LE             512
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:1
+
+  --- Logical volume ---
+  LV Path                /dev/centos_centos7/root
+  LV Name                root
+  VG Name                centos_centos7
+  LV UUID                ycG2vs-G28h-471e-d7mh-I1At-q3O4-7CknOG
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2022-08-25 18:58:52 +0000
+  LV Status              available
+  # open                 1
+  LV Size                <125.00 GiB
+  Current LE             31999
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:0
+```
+
+```shell
+$ vgdisplay
+  --- Volume group ---
+  VG Name               centos_centos7
+  System ID
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  4
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               2
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               <127.00 GiB
+  PE Size               4.00 MiB
+  Total PE              32511
+  Alloc PE / Size       32511 / <127.00 GiB
+  Free  PE / Size       0 / 0
+  VG UUID               uBtbx7-ZGuP-IO2d-LWLi-wU0C-NA0h-8ngFmq
+```
+
+```shell
+$ pvdisplay
+  --- Physical volume ---
+  PV Name               /dev/sda2
+  VG Name               centos_centos7
+  PV Size               <127.00 GiB / not usable 3.00 MiB
+  Allocatable           yes (but full)
+  PE Size               4.00 MiB
+  Total PE              32511
+  Free PE               0
+  Allocated PE          32511
+  PV UUID               8rkATn-0QCn-7Z0q-O2Ds-VDyc-EuSe-Dg1dWN
+```
+
+한꺼번에 보기  
+```shell
+$ vgdisplay -v
+  --- Volume group ---
+  VG Name               centos_centos7
+  System ID
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  4
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               2
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               <127.00 GiB
+  PE Size               4.00 MiB
+  Total PE              32511
+  Alloc PE / Size       32511 / <127.00 GiB
+  Free  PE / Size       0 / 0
+  VG UUID               uBtbx7-ZGuP-IO2d-LWLi-wU0C-NA0h-8ngFmq
+
+  --- Logical volume ---
+  LV Path                /dev/centos_centos7/swap
+  LV Name                swap
+  VG Name                centos_centos7
+  LV UUID                cTjDR4-a0Yc-1qz4-ZhVF-mDq3-ICnj-kSEldM
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2022-08-25 18:58:51 +0000
+  LV Status              available
+  # open                 2
+  LV Size                2.00 GiB
+  Current LE             512
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:1
+
+  --- Logical volume ---
+  LV Path                /dev/centos_centos7/root
+  LV Name                root
+  VG Name                centos_centos7
+  LV UUID                ycG2vs-G28h-471e-d7mh-I1At-q3O4-7CknOG
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2022-08-25 18:58:52 +0000
+  LV Status              available
+  # open                 1
+  LV Size                <125.00 GiB
+  Current LE             31999
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:0
+
+  --- Physical volumes ---
+  PV Name               /dev/sda2
+  PV UUID               8rkATn-0QCn-7Z0q-O2Ds-VDyc-EuSe-Dg1dWN
+  PV Status             allocatable
+  Total PE / Free PE    32511 / 0
+  ```
